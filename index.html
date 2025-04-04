@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="ar">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تسجيل الدخول</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(135deg, #000, #4e73df);
+            color: #fff;
+        }
+
+        .login-container {
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(15px);
+            padding: 40px 30px;
+            border-radius: 15px;
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .login-container img {
+            width: 80px;
+            margin-bottom: 15px;
+        }
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+
+        .input-container {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        input {
+            width: 100%;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 16px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #4e73df;
+        }
+
+        .toggle-password {
+            position: absolute;
+            top: 50%;
+            right: 15px;
+            transform: translateY(-50%);
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(45deg, #E74C3C, #C0392B);
+            color: #fff;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .btn:hover {
+            background: linear-gradient(45deg, #C0392B, #E74C3C);
+        }
+
+        .code-link {
+            display: block;
+            margin-top: 15px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 700;
+        }
+
+        .message {
+            display: none;
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 8px;
+            background: rgba(0, 255, 0, 0.2);
+            color: #0f0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="login-container">
+        <img src="https://www2.0zz0.com/2025/03/27/03/204018145.png" alt="شعار">
+        <h1>تسجيل الدخول</h1>
+
+        <div class="input-container">
+            <input type="text" id="password" placeholder="أدخل الكود">
+            <span class="toggle-password" onclick="togglePassword()">👁️</span>
+        </div>
+
+        <button class="btn" id="login" onclick="checkLogin()">تسجيل الدخول</button>
+        <a href="#" class="code-link" onclick="generateCode()">الحصول على كود جديد</a>
+        <a href="go:telegram" class="code-link">الإنضمام لقناة تلغرام</a>
+        
+        <p id="message" class="message"></p>
+    </div>
+
+    <script>
+        // دالة لتحويل الحروف
+        function getRandomChar() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+            return chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+
+        function togglePassword() {
+            let passwordInput = document.getElementById("password");
+            passwordInput.type = passwordInput.type === "password" ? "text" : "password";
+        }
+
+        function generateCode() {
+            let newCode = '';
+            for (let i = 0; i < 6; i++) {
+                newCode += getRandomChar(); // إنشاء كود مكون من 6 أحرف عشوائية
+            }
+
+            let expirationTime = new Date().getTime() + 24 * 60 * 60 * 1000;
+            let codes = JSON.parse(localStorage.getItem("codes")) || [];
+            codes.push({ code: newCode, expires: expirationTime });
+            localStorage.setItem("codes", JSON.stringify(codes));
+
+            showMessage(`✔ تم إنشاء الكود بنجاح! صالح لمدة 24 ساعة.`, "#0f0");
+        }
+
+        function showMessage(text, color) {
+            let messageBox = document.getElementById("message");
+            messageBox.textContent = text;
+            messageBox.style.display = "block";
+            messageBox.style.color = color;
+            setTimeout(() => { messageBox.style.display = "none"; }, 5000);
+        }
+
+        function checkLogin() {
+            let enteredCode = document.getElementById("password").value;
+            let codes = JSON.parse(localStorage.getItem("codes")) || [];
+            let usedCodes = JSON.parse(localStorage.getItem("usedCodes")) || {};
+            let currentTime = new Date().getTime();
+            let today = new Date().toISOString().split("T")[0];
+
+            let validCode = codes.find(c => c.code === enteredCode && c.expires > currentTime);
+
+            if (validCode) {
+                if (usedCodes[enteredCode] === today) {
+                    showMessage("⚠ لقد استخدمت هذا الكود اليوم، حاول لاحقًا!", "#ffa500");
+                } else {
+                    usedCodes[enteredCode] = today;
+                    localStorage.setItem("usedCodes", JSON.stringify(usedCodes));
+
+                    localStorage.setItem("loggedIn", "true");
+
+                    let remainingTime = Math.floor((validCode.expires - currentTime) / (60 * 60 * 1000));
+                    showMessage(`✅ تسجيل الدخول ناجح! الكود صالح لمدة ${remainingTime} ساعة.`, "#0f0");
+
+                    setTimeout(() => {
+                        window.location.href = "home.html"; // توجيه المستخدم بعد النجاح
+                    }, 2000);
+                }
+            } else {
+                showMessage("❌ الكود غير صالح أو منتهي الصلاحية!", "#f00");
+            }
+        }
+
+        window.onload = function () {
+            if (localStorage.getItem("loggedIn") === "true") {
+                window.location.href = "home.html"; // إذا كان المستخدم مسجلاً الدخول مسبقاً
+            }
+        };
+    </script>
+</body>
+
+</html>
