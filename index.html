@@ -92,6 +92,15 @@
             background-color: rgba(255, 0, 0, 0.2);
             color: #dc3545;
         }
+        .copy-btn {
+            display: none;
+            margin-top: 10px;
+            background-color: #3498db;
+            color: #fff;
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -104,6 +113,7 @@
         </div>
         <button class="btn" id="login" onclick="checkLogin()">تسجيل الدخول</button>
         <a href="#" class="code-link" onclick="generateCode()">الحصول على كود جديد</a>
+        <button class="copy-btn" id="copyCode" onclick="copyCode()">نسخ الكود</button>
         <p id="message" class="message"></p>
     </div>
 
@@ -122,7 +132,7 @@
 
             showMessage(`✔ تم إنشاء الكود بنجاح! صالح لمدة 24 ساعة.`, "success");
 
-            document.getElementById("copyCode").style.display = "block";
+            document.getElementById("copyCode").style.display = "inline-block";
             document.getElementById("copyCode").setAttribute("data-code", newCode);
         }
 
@@ -156,6 +166,13 @@
             messageBox.style.display = "block";
             messageBox.className = "message " + type;
             setTimeout(() => { messageBox.style.display = "none"; }, 5000);
+        }
+
+        function copyCode() {
+            let code = document.getElementById("copyCode").getAttribute("data-code");
+            navigator.clipboard.writeText(code).then(() => {
+                showMessage("✔ تم نسخ الكود!", "success");
+            });
         }
     </script>
 </body>
